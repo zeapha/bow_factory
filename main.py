@@ -2,7 +2,7 @@ import pygame
 import sys
 from constants import *
 from ui import *
-from items import draw_preview
+from items import draw_preview, draw_created_item
 from game_state import GameState
 
 def main():
@@ -19,8 +19,8 @@ def main():
     # Create game state
     game_state = GameState()
     
-    # Create preview rectangle
-    preview_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 - 50, 100, 100)
+    # Create preview rectangle (now moved to the right of the machine)
+    preview_rect = pygame.Rect(300, HEIGHT // 2 - 50, 100, 100)
     
     # Game loop
     clock = pygame.time.Clock()
@@ -82,6 +82,7 @@ def main():
         
         # Update game state
         game_state.update_message_timer()
+        game_state.update_item_animation()  # Update the item animation
         
         # Drawing
         screen.fill(WHITE)
@@ -91,6 +92,9 @@ def main():
         draw_money(screen, game_state.money)
         draw_customer_request(screen, game_state.customer.request)
         draw_section_labels(screen)
+        
+        # Draw the machine
+        draw_machine(screen)
         
         # Draw all buttons
         for button in item_buttons + pattern_buttons + bg_color_buttons + fg_color_buttons:
@@ -109,6 +113,34 @@ def main():
             game_state.selected_bg_color,
             game_state.selected_fg_color
         )
+        
+        # Draw created item if it exists and is moving
+        if game_state.created_item:
+            item_rect = pygame.Rect(
+                game_state.item_position[0] - 50,
+                game_state.item_position[1] - 50,
+                100, 100
+            )
+            draw_created_item(
+                screen,
+                item_rect,
+                game_state.created_item['item'],
+                game_state.created_item['pattern'],
+                game_state.created_item['bg_color'],
+                game_state.created_item['fg_color']
+            )
+        
+        # Draw a conveyor belt between the machine and the creation
+        if game_state.item_moving:
+            # Draw conveyor belt
+            conveyor_rect = pygame.Rect(MACHINE_RECT.right, MACHINE_RECT.centery - 10, 
+                                     500, 20)
+            pygame.draw.rect(screen, DARK_GRAY, conveyor_rect)
+            
+            # Draw rollers
+            for x in range(MACHINE_RECT.right + 10, 710, 30):
+                pygame.draw.rect(screen, BLACK, 
+                              (x, MACHINE_RECT.centery - 5, 20, 10))
         
         # Update display
         pygame.display.flip()

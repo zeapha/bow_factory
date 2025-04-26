@@ -39,7 +39,7 @@ def create_buttons():
 
     pattern_buttons = []
     for i, pattern in enumerate(PATTERNS):
-        pattern_buttons.append(Button(250, 100 + i * 50, ITEM_BUTTON_WIDTH, BUTTON_HEIGHT, pattern, GRAY))
+        pattern_buttons.append(Button(250, 100 + i * 50, ITEM_BUTTON_WIDTH, BUTTON_HEIGHT, pattern, LIGHT_GRAY))
 
     bg_color_buttons = []
     for i, color_name in enumerate(COLORS):
@@ -76,7 +76,7 @@ def draw_title(screen):
 def draw_customer_request(screen, request):
     """Draw the customer request box"""
     request_box = pygame.Rect(400, 20, 350, 60)
-    pygame.draw.rect(screen, GRAY, request_box)
+    pygame.draw.rect(screen, LIGHT_GRAY, request_box)
     pygame.draw.rect(screen, BLACK, request_box, 2)
     
     # Wrap text if too long
@@ -92,3 +92,37 @@ def draw_section_labels(screen):
     screen.blit(font.render("Items", True, BLACK), (50, 70))
     screen.blit(font.render("Patterns", True, BLACK), (250, 70))
     screen.blit(font.render("Colors", True, BLACK), (450, 70))
+
+def draw_machine(screen):
+    """Draw the machine from which the items come out"""
+    # Main body
+    pygame.draw.rect(screen, DARK_GRAY, MACHINE_RECT)
+    pygame.draw.rect(screen, BLACK, MACHINE_RECT, 2)
+    
+    # Machine opening
+    opening_rect = pygame.Rect(MACHINE_RECT.right - 20, MACHINE_RECT.centery - 50, 20, 100)
+    pygame.draw.rect(screen, BLACK, opening_rect)
+    
+    # Control panel
+    panel_rect = pygame.Rect(MACHINE_RECT.left + 20, MACHINE_RECT.top + 30, 
+                          MACHINE_RECT.width - 60, MACHINE_RECT.height - 100)
+    pygame.draw.rect(screen, LIGHT_GRAY, panel_rect)
+    pygame.draw.rect(screen, BLACK, panel_rect, 1)
+    
+    # Knobs and buttons on panel
+    for i in range(3):
+        # Knobs
+        pygame.draw.circle(screen, RED, 
+                         (panel_rect.left + 30, panel_rect.top + 30 + i * 40), 10)
+        pygame.draw.circle(screen, BLACK, 
+                         (panel_rect.left + 30, panel_rect.top + 30 + i * 40), 10, 1)
+        
+        # Indicator lights
+        light_color = GREEN if i % 2 == 0 else RED
+        pygame.draw.circle(screen, light_color, 
+                        (panel_rect.right - 30, panel_rect.top + 30 + i * 40), 8)
+    
+    # Machine name
+    machine_label = small_font.render("BOW-MATIC 3000", True, BLACK)
+    screen.blit(machine_label, (MACHINE_RECT.centerx - machine_label.get_width() // 2, 
+                              MACHINE_RECT.top + 10))
